@@ -1,5 +1,5 @@
 import 'dart:ui';
-
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -25,7 +25,25 @@ class RoomBookingScreen extends StatefulWidget {
     Key? key,
     required this.type,
   }) : super(key: key);
+Future<void> getRoomid() async {
+    String url = '';
+    if (_selectedLevel == 'Floor 3') {
+      url = '/facilityaccess/viewall';
+    } else {
+      url = '/floor2/viewall';
+    }
+    var client = http.Client();
 
+    try {
+      var response = await client.get(Uri.parse(AppUrl.baseUrl + url));
+      var jsonString = response.body;
+      roomId = jsonDecode(jsonString)['id'];
+    } catch (e) {
+      // showSnackBar(
+      //     context: Get.context!, message: e.toString(), bgColor: Colors.red);
+
+    }
+  }
   @override
   _RoomBookingScreenState createState() => _RoomBookingScreenState();
 }
@@ -65,6 +83,7 @@ class _RoomBookingScreenState extends State<RoomBookingScreen> {
     } else {
       _selectedCategory = 1;
     }
+     getRoomid();
     super.initState();
   }
 
@@ -175,9 +194,11 @@ class _RoomBookingScreenState extends State<RoomBookingScreen> {
                               );
                             }).toList(),
                             onChanged: (String? val) {
+                              
                               setState(() {
                                 _selectedLevel = val!;
                               });
+                               getRoomid();
                             }),
                       ),
                     ),
@@ -292,6 +313,7 @@ class _RoomBookingScreenState extends State<RoomBookingScreen> {
                   ),
                 ),
                 if (_formattedDate != null &&
+                    &&roomId!=null &&
                     _startTime != null &&
                     _endTime != null)
                   ListView.builder(
@@ -474,7 +496,7 @@ class _RoomBookingScreenState extends State<RoomBookingScreen> {
               height: 15,
             ),
             transparentWhiteContainer(
-                child: Column(
+                child: ListView(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
