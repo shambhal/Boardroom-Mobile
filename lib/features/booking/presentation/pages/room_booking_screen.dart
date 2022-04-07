@@ -550,7 +550,10 @@ class _RoomBookingScreenState extends State<RoomBookingScreen> {
                     },
                     child: confirmButton(),
                   ),
-                )
+                ),
+                const SizedBox(
+                  height: 15,
+                ),
               ],
             ))
           ],
