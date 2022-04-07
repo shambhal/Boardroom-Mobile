@@ -64,7 +64,7 @@ class AppHelpers {
   ];
 
   static String formatDate(DateTime value) {
-    var date = '${value.day}-${value.day}-${value.year}';
+    var date = '${value.day}-${value.month}-${value.year}';
     return date;
   }
 
