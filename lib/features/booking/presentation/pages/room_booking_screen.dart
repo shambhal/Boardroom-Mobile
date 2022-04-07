@@ -376,7 +376,7 @@ class _RoomBookingScreenState extends State<RoomBookingScreen> {
   }
 
   Widget timeBottomSheet() {
-    return StatefulBuilder(builder: (context, setState) {
+   return StatefulBuilder(builder: (context, setState) {
       return Container(
         padding: const EdgeInsets.only(top: 12.0, left: 12.0, right: 12.0),
         decoration: BoxDecoration(
@@ -510,6 +510,7 @@ class _RoomBookingScreenState extends State<RoomBookingScreen> {
                   alignment: Alignment.centerRight,
                   child: InkWell(
                     onTap: () {
+                      print("inkwell printed");
                       if (_selectedLevel != null &&
                           _dateTime != null &&
                           _startTime != null &&
@@ -548,7 +549,7 @@ class _RoomBookingScreenState extends State<RoomBookingScreen> {
                             context: context, message: 'Select All Fields');
                       }
                     },
-                    child: confirmButton(),
+                    child: Text('Confirm'),
                   ),
                 ),
                 const SizedBox(
