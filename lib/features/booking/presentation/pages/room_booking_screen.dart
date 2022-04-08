@@ -1,19 +1,21 @@
 import 'dart:ui';
-
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:hot_desking/core/app_colors.dart';
 import 'package:hot_desking/core/app_helpers.dart';
 import 'package:hot_desking/core/app_theme.dart';
+import 'package:hot_desking/core/app_urls.dart';
 import 'package:hot_desking/core/widgets/show_snackbar.dart';
+import 'package:http/http.dart' as http;
 import 'package:hot_desking/features/booking/data/datasource/room_booking_datasource.dart';
 import 'package:hot_desking/features/booking/widgets/booking_confirmed_dialog.dart';
 import 'package:hot_desking/features/booking/widgets/confirm_button.dart';
-import 'package:hot_desking/features/floors/level3/level_3_layout.dart';
-import 'package:hot_desking/features/booking/widgets/seat_selection_dialog.dart';
-import 'package:hot_desking/features/floors/level3/level_3_room.dart';
-import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
+//import 'package:hot_desking/features/floors/level3/level_3_layout.dart';
+//import 'package:hot_desking/features/booking/widgets/seat_selection_dialog.dart';
+//import 'package:hot_desking/features/floors/level3/level_3_room.dart';
+//import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 
 import '../../../floors/level14/level14_room.dart';
 import '../../widgets/time_slot_dialog.dart';
@@ -45,6 +47,7 @@ class _RoomBookingScreenState extends State<RoomBookingScreen> {
     '7',
     '8',
   ];
+
   String? _selectedLevel = 'Floor 3';
   DateTime? _dateTime;
   TimeOfDay? _startTime, _endTime;
@@ -57,6 +60,29 @@ class _RoomBookingScreenState extends State<RoomBookingScreen> {
       AppHelpers.SHARED_PREFERENCES.getString('firstName') ?? 'John';
   String lastName =
       AppHelpers.SHARED_PREFERENCES.getString('lastName') ?? 'Doe';
+  Future<void> getRoomid() async {
+    String url = '';
+    if (_selectedLevel == 'Floor 3') {
+      // url = '/facilityaccess/viewall';
+      url = '/floorthirteen/viewall';
+    } else {
+      url = '/floorthirteen/viewall';
+    }
+    var client = http.Client();
+    print(url);
+    try {
+      var response = await client.get(Uri.parse(AppUrl.baseUrl + url));
+      var jsonString = response.body;
+      print(response);
+      roomId = jsonDecode(jsonString)[0]['id'];
+      List arr = jsonDecode(jsonString);
+      print(arr.elementAt(0)['id']);
+    } catch (e) {
+      // showSnackBar(
+      //     context: Get.context!, message: e.toString(), bgColor: Colors.red);
+
+    }
+  }
 
   @override
   void initState() {
@@ -65,6 +91,7 @@ class _RoomBookingScreenState extends State<RoomBookingScreen> {
     } else {
       _selectedCategory = 1;
     }
+    getRoomid();
     super.initState();
   }
 
@@ -74,6 +101,9 @@ class _RoomBookingScreenState extends State<RoomBookingScreen> {
       color: Colors.black.withOpacity(0.5));
   @override
   Widget build(BuildContext context) {
+    print(_formattedDate);
+    print(_startTime);
+    print(_endTime);
     return Scaffold(
       backgroundColor: AppColors.kGreyBackground,
       body: SafeArea(
@@ -178,6 +208,7 @@ class _RoomBookingScreenState extends State<RoomBookingScreen> {
                               setState(() {
                                 _selectedLevel = val!;
                               });
+                              getRoomid();
                             }),
                       ),
                     ),
@@ -293,6 +324,7 @@ class _RoomBookingScreenState extends State<RoomBookingScreen> {
                 ),
                 if (_formattedDate != null &&
                     _startTime != null &&
+                    roomId != null &&
                     _endTime != null)
                   ListView.builder(
                       shrinkWrap: true,
@@ -314,6 +346,7 @@ class _RoomBookingScreenState extends State<RoomBookingScreen> {
                               ),
                               InkWell(
                                 onTap: () {
+                                  roomId = index + 1;
                                   Get.bottomSheet(
                                     timeBottomSheet(),
                                   );
@@ -386,7 +419,7 @@ class _RoomBookingScreenState extends State<RoomBookingScreen> {
             topRight: Radius.circular(20.0),
           ),
         ),
-        child: Column(
+        child: ListView(
           children: [
             transparentWhiteContainer(
                 child: const Text(
