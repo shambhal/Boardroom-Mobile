@@ -11,5 +11,5 @@ class AppUrl {
   static const String createRoomBooking = '$baseUrl/roombooking/create';
   //history
   static const String viewByEmployee = '$baseUrl/booking/viewbyemployee';
-  static const String viewByTime = '$baseUrl/booking/viewbytime';
+  static const String viewByTime = '$baseUrl/roombooking/viewbytime';
 }
