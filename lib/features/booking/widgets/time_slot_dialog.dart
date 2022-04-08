@@ -28,6 +28,8 @@ class TimeSlotDialog extends StatefulWidget {
 }
 
 class _TimeSlotDialogState extends State<TimeSlotDialog> {
+  DateTime sdate = DateTime.now();
+
   Widget textWidget(String title) {
     return SizedBox(
       height: 37.h,
@@ -43,6 +45,7 @@ class _TimeSlotDialogState extends State<TimeSlotDialog> {
   TimeOfDay? startTime, endTime;
   @override
   void initState() {
+    sdate = widget.date;
     startTime = widget.startTime;
     super.initState();
   }
@@ -89,13 +92,29 @@ class _TimeSlotDialogState extends State<TimeSlotDialog> {
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: Center(
-                        child: Text(
-                          AppHelpers.formatDate(widget.date),
-                          style: AppTheme.hintTextStyle,
-                        ),
-                      ),
+                      child: InkWell(
+                          onTap: () {
+                            showDatePicker(
+                                    context: context,
+                                    initialDate: widget.date,
+                                    firstDate: DateTime.now(),
+                                    lastDate: DateTime.now()
+                                        .add(const Duration(days: 180)))
+                                .then((value) {
+                              if (value == null) return;
+                              setState(() {
+                                sdate = value;
+                              });
+                            });
+                          },
+                          child: Center(
+                            child: Text(
+                              AppHelpers.formatDate(sdate),
+                              style: AppTheme.hintTextStyle,
+                            ),
+                          )),
                     ),
+
                     // Container(
                     //   height: 27.h,
                     //   width: 157.w,
@@ -187,7 +206,8 @@ class _TimeSlotDialogState extends State<TimeSlotDialog> {
                       .createBooking(
                     tableNo: widget.tableNo,
                     seatNo: widget.seatNo,
-                    date: AppHelpers.formatDate(widget.date),
+                    date: AppHelpers.formatDate(sdate),
+                    //date: sdate,
                     fromTime: AppHelpers.formatTime(startTime!),
                     toTime: AppHelpers.formatTime(endTime!),
                   )
